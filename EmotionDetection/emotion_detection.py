@@ -9,6 +9,18 @@ def emotion_detector(text_to_analyze):
         "Content-Type": "application/json"
     }
     
+    # Handle blank input
+    if not text_to_analyze.strip():
+        # Return a dictionary with all None values for blank input
+        return {
+            'anger': None,
+            'disgust': None,
+            'fear': None,
+            'joy': None,
+            'sadness': None,
+            'dominant_emotion': None
+        }
+    
     # Define the JSON structure of the request payload
     input_json = {
         "raw_document": {
@@ -26,7 +38,6 @@ def emotion_detector(text_to_analyze):
                 
         # Check if 'emotionPredictions' key is in the response
         if 'emotionPredictions' in response_dict:
-            
             # Extract the first item in 'emotionPredictions' list
             emotion_prediction = response_dict['emotionPredictions'][0]
             
@@ -65,8 +76,19 @@ def emotion_detector(text_to_analyze):
                 return "Emotion key not found in emotionPredictions."
         else:
             return "EmotionPredictions not found in response."
+
+    # Handle status code 400 - Bad Request (e.g., server did not accept input)
+    elif response.status_code == 400:
+        # Return a dictionary with all None values for a bad request
+        return {
+            'anger': None,
+            'disgust': None,
+            'fear': None,
+            'joy': None,
+            'sadness': None,
+            'dominant_emotion': None
+        }
+
     else:
         # If the request failed, return an error message
         return f'Request failed with status code {response.status_code}: {response.text}'
-
-
