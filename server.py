@@ -11,8 +11,9 @@ def detect_emotion():
         # Extract 'textToAnalyze' from query parameters
         text_to_analyze = request.args.get('textToAnalyze')
         
-        if not text_to_analyze:
-            return "Error: No text provided for analysis. Please provide a valid input.", 400
+        # Handle empty or missing text
+        if not text_to_analyze or not text_to_analyze.strip():
+            return "Invalid text! Please try again."
         
         # Call the emotion_detector function with the given text
         result = emotion_detector(text_to_analyze)
@@ -28,14 +29,20 @@ def detect_emotion():
         
         text_to_analyze = request_data['text']
         
+        # Handle empty or missing text
+        if not text_to_analyze or not text_to_analyze.strip():
+            return "Invalid text! Please try again.", 400
+
         # Call the emotion_detector function with the given text
         result = emotion_detector(text_to_analyze)
 
     # If the result is a dictionary, format the response
     if isinstance(result, dict):
+        # Check if the dominant emotion is None
         if result['dominant_emotion'] is None:
             return "Invalid text! Please try again."
         
+        # Construct the response text
         response_text = (
             f"For the given statement, the system response is "
             f"'anger': {result['anger']}, 'disgust': {result['disgust']}, "
@@ -52,4 +59,4 @@ def render_index_page():
     return render_template('index.html')
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5001)
+    app.run(host='0.0.0.0', port=5003)
